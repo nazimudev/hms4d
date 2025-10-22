@@ -22,6 +22,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     <AppLayout :breadcrumbs="breadcrumbs">
     <div class="p-4" >
         <h1> Create New User </h1>
+        <p>Add a new user</p>
     </div>
     </AppLayout>
 </template>
