@@ -363,8 +363,19 @@ const onSubmit = handleSubmit((data: any) => {
                         </FormItem>
                     </FormField>
 
+                    <!-- Designation -->
+                    <FormField name="designation">
+                        <FormItem>
+                            <FormLabel>Designation</FormLabel>
+                            <FormControl>
+                                <Input placeholder="123456789" />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    </FormField>
+
                     <!-- Joining Date -->
-                    <FormField name="dob">
+                    <FormField name="joining_date">
                         <FormItem class="flex flex-col w-full">
                             <FormLabel>Joining Date</FormLabel>
                             <Popover>
@@ -374,7 +385,7 @@ const onSubmit = handleSubmit((data: any) => {
                                             variant="outline"
                                             :class="
                                                 cn(
-                                                    'w-[240px] ps-3 text-start font-normal',
+                                                    'h-10 w-full text-start font-normal border rounded-md',
                                                     !value &&
                                                         'text-muted-foreground',
                                                 )

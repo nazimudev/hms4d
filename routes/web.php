@@ -18,7 +18,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/users/role', [RoleController::class, 'index'])->name('users.role');
     // Route::get('/users/role/check', [RoleController::class, 'check_role'])->name('users.role.check');
-    Route::post('/users/role/store', [RoleController::class, 'store_role'])->name('users.role.store');
+    Route::post('/users/role/store', [RoleController::class, 'storeRole'])->name('users.role.store');
     // Delete User Role
     Route::delete('/users/roles/{id}', [RoleController::class, 'destroy'])->name('users.role.destroy');
     // Permission
@@ -28,16 +28,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/users/{user}/roles', [RoleController::class, 'roles']);
     Route::post('/users/{user}/roles', [RoleController::class, 'updateRole']);
     // Assign Permission To Role
-    Route::get('/roles', [RoleController::class, 'index_role'])->name('roles.index');
+    Route::get('/roles', [RoleController::class, 'indexRole'])->name('roles.index');
     Route::get('/roles/{id}/permissions', [RoleController::class, 'permissions']);
     Route::post('/roles/{id}/permissions', [RoleController::class, 'updatePermissions']);
-
 });
 
 Route::resource('users', UsersController::class)->middleware('auth');
 
 
-
-
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';
