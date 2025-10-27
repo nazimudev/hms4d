@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * NavMain.vue
+ * Permission-aware recursive sidebar menu
+ */
+
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -11,16 +16,20 @@ import { urlIsActive } from '@/lib/utils'
 import { type NavItem } from '@/types'
 import { Link, usePage } from '@inertiajs/vue3'
 import { ChevronDown } from 'lucide-vue-next'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useAuth } from '@/utils/useAuth'
 
-defineProps<{
-  items: NavItem[]
-}>()
+// 🔹 Get current user permissions
+const { can } = useAuth()
 
+// Props
+const props = defineProps<{ items: NavItem[] }>()
+
+// Page & state
 const page = usePage()
 const openSubMenus = ref<string[]>([])
 
-// ✅ Toggle submenu open/close
+// Toggle submenu open/close
 const toggleSubMenu = (title: string) => {
   if (openSubMenus.value.includes(title)) {
     openSubMenus.value = openSubMenus.value.filter((t) => t !== title)
@@ -29,14 +38,34 @@ const toggleSubMenu = (title: string) => {
   }
 }
 
-// ✅ Detect active route recursively
+// Detect active route recursively
 const isCurrentRoute = (item: NavItem): boolean => {
-  if (urlIsActive(item.href, page.url)) return true
+  if (item.href && urlIsActive(item.href, page.url)) return true
   if (item.children) {
     return item.children.some((child) => isCurrentRoute(child))
   }
   return false
 }
+
+// Filter items based on permission (without overwriting original array)
+const filteredItems = computed(() =>
+  props.items
+    .map((item) => {
+      if (item.children) {
+        const filteredChildren = item.children.filter(
+          (child) => !child.permission || can(child.permission)
+        )
+        if (filteredChildren.length) {
+          return { ...item, children: filteredChildren }
+        }
+        return null
+      }
+
+      if (!item.permission || can(item.permission)) return item
+      return null
+    })
+    .filter(Boolean) as NavItem[]
+)
 </script>
 
 <template>
@@ -44,7 +73,7 @@ const isCurrentRoute = (item: NavItem): boolean => {
     <SidebarGroupLabel>Platform</SidebarGroupLabel>
 
     <SidebarMenu>
-      <template v-for="item in items" :key="item.title">
+      <template v-for="item in filteredItems" :key="item.title">
         <SidebarMenuItem>
           <!-- If item has children -->
           <template v-if="item.children && item.children.length">
@@ -68,33 +97,22 @@ const isCurrentRoute = (item: NavItem): boolean => {
                 v-if="openSubMenus.includes(item.title)"
                 class="ml-4 border-l pl-3"
               >
-                <template
-                  v-for="subItem in item.children"
-                  :key="subItem.title"
-                >
-                  <!-- Recursive rendering -->
+                <template v-for="subItem in item.children" :key="subItem.title">
                   <SidebarMenuItem>
-                    <template
-                      v-if="subItem.children && subItem.children.length"
-                    >
+                    <!-- Recursive children -->
+                    <template v-if="subItem.children && subItem.children.length">
                       <SidebarMenuButton
                         :is-active="isCurrentRoute(subItem)"
                         @click="toggleSubMenu(subItem.title)"
                         class="flex items-center justify-between"
                       >
                         <div class="flex items-center space-x-2">
-                          <component
-                            v-if="subItem.icon"
-                            :is="subItem.icon"
-                            class="w-4 h-4"
-                          />
+                          <component v-if="subItem.icon" :is="subItem.icon" class="w-4 h-4" />
                           <span>{{ subItem.title }}</span>
                         </div>
                         <ChevronDown
                           class="transition-transform duration-200"
-                          :class="{
-                            'rotate-180': openSubMenus.includes(subItem.title),
-                          }"
+                          :class="{ 'rotate-180': openSubMenus.includes(subItem.title) }"
                         />
                       </SidebarMenuButton>
 
@@ -113,11 +131,7 @@ const isCurrentRoute = (item: NavItem): boolean => {
                               :tooltip="child.title"
                             >
                               <Link :href="child.href">
-                                <component
-                                  v-if="child.icon"
-                                  :is="child.icon"
-                                  class="w-4 h-4"
-                                />
+                                <component v-if="child.icon" :is="child.icon" class="w-4 h-4" />
                                 <span>{{ child.title }}</span>
                               </Link>
                             </SidebarMenuButton>
@@ -126,7 +140,7 @@ const isCurrentRoute = (item: NavItem): boolean => {
                       </transition>
                     </template>
 
-                    <!-- Leaf menu (no children) -->
+                    <!-- Leaf menu -->
                     <template v-else>
                       <SidebarMenuButton
                         as-child
@@ -134,11 +148,7 @@ const isCurrentRoute = (item: NavItem): boolean => {
                         :tooltip="subItem.title"
                       >
                         <Link :href="subItem.href">
-                          <component
-                            v-if="subItem.icon"
-                            :is="subItem.icon"
-                            class="w-4 h-4"
-                          />
+                          <component v-if="subItem.icon" :is="subItem.icon" class="w-4 h-4" />
                           <span>{{ subItem.title }}</span>
                         </Link>
                       </SidebarMenuButton>
@@ -149,7 +159,7 @@ const isCurrentRoute = (item: NavItem): boolean => {
             </transition>
           </template>
 
-          <!-- Normal single-level item -->
+          <!-- Single-level item -->
           <template v-else>
             <SidebarMenuButton
               as-child

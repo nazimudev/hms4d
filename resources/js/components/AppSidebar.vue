@@ -2,6 +2,8 @@
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
+import  { useAuth }  from '@/utils/useAuth';
+import { computed, ref } from 'vue';
 import {
     Sidebar,
     SidebarContent,
@@ -26,12 +28,13 @@ import {BookOpen, HandCoins, UserRoundMinus, HeartPulse, CircleDollarSign, BarCh
     } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
-const mainNavItems: NavItem[] = [
+const rawNavItems: NavItem[] = [
     // Dashboard
     {
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+        permission: 'dashboard.view'
     },
     // Test Management
     {
@@ -44,6 +47,7 @@ const mainNavItems: NavItem[] = [
         title: 'Test/Group List',
         href: '#',
         icon: Component,
+        permission: 'test.view',
       },
       {
         title: 'Additional/Items',
@@ -704,7 +708,7 @@ const mainNavItems: NavItem[] = [
         children: [
             {
             title: 'Add Designation',
-            href: '#',
+            href: '/create/designation',
             icon: UserPlus,
             },
             {
@@ -894,6 +898,25 @@ const mainNavItems: NavItem[] = [
         icon: Settings,
     },
 ];
+
+const { can, hasRole } = useAuth();
+
+// 🔹 Filter mainNavItems according to user permissions
+const mainNavItems = computed(() =>
+  rawNavItems
+    .map(item => {
+      if (item.children) {
+        const filteredChildren = item.children.filter(
+          child => !child.permission || can(child.permission)
+        )
+        if (filteredChildren.length) return { ...item, children: filteredChildren }
+        return null
+      }
+      if (!item.permission || can(item.permission)) return item
+      return null
+    })
+    .filter(Boolean)
+)
 
 
 const footerNavItems: NavItem[] = [

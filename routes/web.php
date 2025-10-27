@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HrManageController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/roles', [RoleController::class, 'indexRole'])->name('roles.index');
     Route::get('/roles/{id}/permissions', [RoleController::class, 'permissions']);
     Route::post('/roles/{id}/permissions', [RoleController::class, 'updatePermissions']);
+    // HR Managment
+    Route::get('create/designation', [HrManageController::class, 'createDesignation'])->name('create.designation');
 });
 
 Route::resource('users', UsersController::class)->middleware('auth');
