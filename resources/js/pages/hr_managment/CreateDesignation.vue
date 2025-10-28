@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import { Head, useForm } from '@inertiajs/vue3'
+import { Head, useForm, usePage } from '@inertiajs/vue3'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { dashboard } from '@/routes'
 import { toast } from 'vue-sonner';
 import axios from 'axios';
 import { toTypedSchema } from '@vee-validate/zod';
 import { z } from 'zod';
+
 
 // UI Components
 import { Button } from '@/components/ui/button'
@@ -33,8 +34,33 @@ const form = useForm({
 })
 
 const submitForm = () => {
-  console.log('Form Data:', form)
-  form.reset()
+  form.post('/store/designation', {
+    onSuccess: () => {
+        const { flash } = usePage().props;
+        const message = flash?.success || 'Designation created successfully';
+
+        toast.success(message, {
+            description: `${form.name} has been added.`,
+            action: {
+                label: 'Ok',
+                onClick: () => toast.dismiss(),
+            },
+        });
+        form.reset();
+    },
+    onError: () => {
+        const { flash } = usePage().props;
+        const errorMessage = flash?.error || 'Failed to create designation';
+
+        toast.error(errorMessage, {
+            action: {
+                label: 'Retry',
+                onClick: () => toast.dismiss(),
+            },
+        });
+    },
+  })
+
   // তুমি এখানে axios / inertia.post ব্যবহার করে ব্যাকএন্ডে পাঠাতে পারো
 }
 </script>
@@ -54,7 +80,7 @@ const submitForm = () => {
               <FormControl>
                 <Input v-model="form.name" placeholder="Enter designation name" />
               </FormControl>
-              <FormMessage />
+              <FormMessage v-if="form.errors.name">{{ form.errors.name }}</FormMessage>
             </FormItem>
           </FormField>
 

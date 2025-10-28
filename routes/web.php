@@ -33,7 +33,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/roles/{id}/permissions', [RoleController::class, 'permissions']);
     Route::post('/roles/{id}/permissions', [RoleController::class, 'updatePermissions']);
     // HR Managment
-    Route::get('create/designation', [HrManageController::class, 'createDesignation'])->name('create.designation');
+    Route::get('/create/designation', [HrManageController::class, 'createDesignation'])->name('create.designation');
+    Route::post('/store/designation', [HrManageController::class, 'storeDesignation'])->name('store.designation');
+    Route::get('/designation/list', [HrManageController::class, 'designationList'])->name('designation.list');
+    Route::delete('/designation/{id}', [HrManageController::class, 'designationDelete'])->name('designation.delete');
 });
 
 Route::resource('users', UsersController::class)->middleware('auth');

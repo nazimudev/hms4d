@@ -67,6 +67,11 @@ class RoleController extends Controller
         $role = Role::findOrFail($id);
         $role->delete();
 
+        $pages = ceil(Role::count() / 5);
+        for ($i = 1; $i <= $pages; $i++) {
+            Cache::forget("roles_page_{$i}");
+        }
+
         return redirect()->back()->with('success', 'Role deleted successfully!');
     }
 

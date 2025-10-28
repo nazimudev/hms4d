@@ -713,7 +713,7 @@ const rawNavItems: NavItem[] = [
             },
             {
             title: 'Designation List',
-            href: '#',
+            href: '/designation/list',
             icon: ClipboardList,
             },
             {
