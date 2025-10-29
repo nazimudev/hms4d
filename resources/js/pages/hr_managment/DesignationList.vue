@@ -7,14 +7,26 @@ import { dashboard } from '@/routes';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { Edit, Trash2 } from 'lucide-vue-next';
 import { toast } from 'vue-sonner';
+import { computed } from "vue";
 
 const breadcrumbs = [
     { title: 'Dashboard', href: dashboard().url },
     { title: 'Designation List', href: '#' },
 ];
 
-const { props } = usePage();
-const designations = props.designations || [];
+// const { props } = usePage();
+// const designations = props.designations.data || [];
+// const pagination = props.designations;
+
+const designations = computed(() => usePage().props.designations.data || []);
+const pagination = computed(() => usePage().props.designations);
+
+function goToPage(page) {
+    router.get(`/designation/list?page=${page}`, {}, { preserveScroll: true });
+}
+
+
+
 
 const handleEdit = (id) => {
     router.visit(`/designations/${id}/edit`);
@@ -67,7 +79,7 @@ const handleDelete = (id) => {
 
             <TableBody>
               <TableRow v-for="(item, index) in designations" :key="item.id">
-                <TableCell>{{ index + 1 }}</TableCell>
+                <TableCell>{{ (pagination.current_page - 1) * pagination.per_page + (index + 1) }}</TableCell>
                 <TableCell>{{ item.name || '—' }}</TableCell>
                 <TableCell>{{ item.description || '—' }}</TableCell>
                 <TableCell>
@@ -132,6 +144,32 @@ const handleDelete = (id) => {
             </TableEmpty>
 
           </Table>
+            <!-- 📄 Pagination -->
+            <div
+                v-if="pagination.data && pagination.data.length"
+                class="mt-4 flex items-center justify-between"
+            >
+                <span class="text-sm text-gray-500">
+                    Showing {{ pagination.from }} - {{ pagination.to }} of
+                    {{ pagination.total }}
+                </span>
+                <div class="flex gap-2">
+                    <button
+                        :disabled="!pagination.prev_page_url"
+                        @click="goToPage(pagination.current_page - 1)"
+                        class="rounded bg-gray-200 px-3 py-1 text-sm hover:bg-gray-300 disabled:opacity-50"
+                    >
+                        Prev
+                    </button>
+                    <button
+                        :disabled="!pagination.next_page_url"
+                        @click="goToPage(pagination.current_page + 1)"
+                        class="rounded bg-gray-200 px-3 py-1 text-sm hover:bg-gray-300 disabled:opacity-50"
+                    >
+                        Next
+                    </button>
+                </div>
+            </div>
         </div>
       </div>
     </AppLayout>

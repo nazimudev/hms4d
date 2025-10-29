@@ -36,7 +36,7 @@ const form = useForm({
 const submitForm = () => {
   form.post('/store/designation', {
     onSuccess: () => {
-        const { flash } = usePage().props;
+        const flash = (usePage().props as any).flash as { success?: string } | undefined;
         const message = flash?.success || 'Designation created successfully';
 
         toast.success(message, {
@@ -49,7 +49,7 @@ const submitForm = () => {
         form.reset();
     },
     onError: () => {
-        const { flash } = usePage().props;
+        const flash = (usePage().props as any).flash as { error?: string } | undefined;
         const errorMessage = flash?.error || 'Failed to create designation';
 
         toast.error(errorMessage, {

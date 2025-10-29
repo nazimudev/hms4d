@@ -6,6 +6,14 @@ import axios from 'axios';
 import { Pencil, Trash2 } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { usePage } from '@inertiajs/vue3'
+
+// তারপর
+const breadcrumbs = [
+    { title: 'Dashboard', href: '/dashboard' },
+    { title: 'Role', href: '#' },
+];
+
 
 // ✅ Props from Inertia
 const props = defineProps({

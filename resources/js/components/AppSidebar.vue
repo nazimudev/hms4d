@@ -24,6 +24,7 @@ import {BookOpen, HandCoins, UserRoundMinus, HeartPulse, CircleDollarSign, BarCh
         Users, BookUser, BarChart3, Boxes, FlaskRound, FilePlus2, ScanLine, Signature, ListCheck, MinusCircle, TrendingDown, FolderPlus,
         FileText, CalendarDays, FolderOpen, ClipboardPen, UsersRound, Calculator, BarChart4, ListOrdered, BadgePercent, UserSquare,
         Settings, ScrollText, Megaphone, Receipt, CalendarRange, Users2, TrendingUp, Stethoscope, ShieldCheck, Component, SquarePen,
+        Church,
 
     } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
@@ -715,6 +716,16 @@ const rawNavItems: NavItem[] = [
             title: 'Designation List',
             href: '/designation/list',
             icon: ClipboardList,
+            },
+            {
+                title: 'Add Department',
+                href: '/create/department',
+                icon: Church,
+            },
+            {
+                title: 'Department List',
+                href: '#',
+                icon: List,
             },
             {
             title: 'Add Groups',

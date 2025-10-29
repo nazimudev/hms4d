@@ -37,6 +37,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/store/designation', [HrManageController::class, 'storeDesignation'])->name('store.designation');
     Route::get('/designation/list', [HrManageController::class, 'designationList'])->name('designation.list');
     Route::delete('/designation/{id}', [HrManageController::class, 'designationDelete'])->name('designation.delete');
+    // Department Routes
+    Route::get('/create/department', [HrManageController::class, 'createDepartment'])->name('create.department');
+    Route::post('/store/department', [HrManageController::class, 'storeDepartment'])->name('store.department');
 });
 
 Route::resource('users', UsersController::class)->middleware('auth');

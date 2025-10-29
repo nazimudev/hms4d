@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DesignationCreate;
+use App\Http\Requests\DepartmentRequest;
+use App\Models\Department;
 use App\Models\Designation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -22,11 +24,6 @@ class HrManageController extends Controller
         $valiatedData = $designationCreate->validated();
         try {
             Designation::create($valiatedData);
-            $pages = ceil(Designation::count() / 10);
-            for ($i = 1; $i <= $pages; $i++) {
-                Cache::forget("designations_page_{$i}");
-            }
-            Cache::forget("designations");
             return back()->with('success', 'Designation Created Successfully');
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
@@ -36,23 +33,40 @@ class HrManageController extends Controller
     // Designation List Page
     public function designationList()
     {
-        // $designations = Designation::all();
-        $page = request()->get('page', 1);
-        $designations = Cache::remember("designations_page_{$page}", 60, function () {
-            return Designation::orderBy('id', 'desc')->paginate(10);
-        });
+
+        $designations = Designation::orderBy('id', 'desc')->paginate(10);
+
         return Inertia::render('hr_managment/DesignationList', [
             'designations' => $designations
         ]);
     }
+
+
 
     // Designation Delete
     public function designationDelete($id)
     {
         try {
             Designation::find($id)->delete();
-            Cache::forget("designations");
             return back()->with('success', 'Designation Deleted Successfully');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    // Department Create Page
+    public function createDepartment()
+    {
+        return Inertia::render('hr_managment/CreateDepartment');
+    }
+
+    // Department Store Function
+    public function storeDepartment(DepartmentRequest $departmentRequest)
+    {
+        $validatedData = $departmentRequest->validated();
+        try {
+            Department::create($validatedData);
+            return back()->with('success', 'Department Created Successfully');
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }

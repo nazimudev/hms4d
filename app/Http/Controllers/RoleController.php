@@ -14,12 +14,7 @@ class RoleController extends Controller
     // Role Page
     public function index()
     {
-        // $roles = Role::orderBy('id', 'desc')->paginate(5);
-        $page = request()->get('page', 1); // default page = 1
-        $roles = Cache::remember("roles_page_{$page}", 60, function () {
-            return Role::orderBy('id', 'desc')->paginate(5);
-        });
-        // 🔹 সব পারমিশন আনছি (category না থাকলে 'General' দেখাবে)
+        $roles = Role::orderBy('id', 'desc')->paginate(5);
         $permissions = Permission::select('id', 'name', 'display_name', 'description')
             ->get()
             ->map(function ($perm) {
@@ -49,13 +44,9 @@ class RoleController extends Controller
             'display_name' => 'required|string',
             'description' => 'nullable|string|max:40'
         ]);
-
+        // dd($data);
         try {
             Role::create($data);
-            $pages = ceil(Role::count() / 5);
-            for ($i = 1; $i <= $pages; $i++) {
-                Cache::forget("roles_page_{$i}");
-            }
             return back()->with('success', 'Role Create Successfully');
         } catch (\Exception $e) {
             return back()->with('error', 'Something went wrong' . $e->getMessage());
@@ -66,12 +57,6 @@ class RoleController extends Controller
     {
         $role = Role::findOrFail($id);
         $role->delete();
-
-        $pages = ceil(Role::count() / 5);
-        for ($i = 1; $i <= $pages; $i++) {
-            Cache::forget("roles_page_{$i}");
-        }
-
         return redirect()->back()->with('success', 'Role deleted successfully!');
     }
 
