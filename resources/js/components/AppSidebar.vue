@@ -2,6 +2,8 @@
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
+import  { useAuth }  from '@/utils/useAuth';
+import { computed, ref } from 'vue';
 import {
     Sidebar,
     SidebarContent,
@@ -22,16 +24,18 @@ import {BookOpen, HandCoins, UserRoundMinus, HeartPulse, CircleDollarSign, BarCh
         Users, BookUser, BarChart3, Boxes, FlaskRound, FilePlus2, ScanLine, Signature, ListCheck, MinusCircle, TrendingDown, FolderPlus,
         FileText, CalendarDays, FolderOpen, ClipboardPen, UsersRound, Calculator, BarChart4, ListOrdered, BadgePercent, UserSquare,
         Settings, ScrollText, Megaphone, Receipt, CalendarRange, Users2, TrendingUp, Stethoscope, ShieldCheck, Component, SquarePen,
+        Church,
 
     } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
-const mainNavItems: NavItem[] = [
+const rawNavItems: NavItem[] = [
     // Dashboard
     {
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+        permission: 'dashboard.view'
     },
     // Test Management
     {
@@ -44,6 +48,7 @@ const mainNavItems: NavItem[] = [
         title: 'Test/Group List',
         href: '#',
         icon: Component,
+        permission: 'test.view',
       },
       {
         title: 'Additional/Items',
@@ -704,13 +709,23 @@ const mainNavItems: NavItem[] = [
         children: [
             {
             title: 'Add Designation',
-            href: '#',
+            href: '/create/designation',
             icon: UserPlus,
             },
             {
             title: 'Designation List',
-            href: '#',
+            href: '/designation/list',
             icon: ClipboardList,
+            },
+            {
+                title: 'Add Department',
+                href: '/create/department',
+                icon: Church,
+            },
+            {
+                title: 'Department List',
+                href: '#',
+                icon: List,
             },
             {
             title: 'Add Groups',
@@ -894,6 +909,25 @@ const mainNavItems: NavItem[] = [
         icon: Settings,
     },
 ];
+
+const { can, hasRole } = useAuth();
+
+// 🔹 Filter mainNavItems according to user permissions
+const mainNavItems = computed(() =>
+  rawNavItems
+    .map(item => {
+      if (item.children) {
+        const filteredChildren = item.children.filter(
+          child => !child.permission || can(child.permission)
+        )
+        if (filteredChildren.length) return { ...item, children: filteredChildren }
+        return null
+      }
+      if (!item.permission || can(item.permission)) return item
+      return null
+    })
+    .filter(Boolean)
+)
 
 
 const footerNavItems: NavItem[] = [

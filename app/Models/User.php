@@ -13,7 +13,9 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 class User extends Authenticatable implements LaratrustUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    use HasFactory;
+    use Notifiable;
+    use TwoFactorAuthenticatable;
     use HasRolesAndPermissions;
 
     /**

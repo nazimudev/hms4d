@@ -7,15 +7,14 @@ use Inertia\Inertia;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
-
+use Illuminate\Support\Facades\Cache;
 
 class RoleController extends Controller
 {
     // Role Page
-    function index(){
-
+    public function index()
+    {
         $roles = Role::orderBy('id', 'desc')->paginate(5);
-        // 🔹 সব পারমিশন আনছি (category না থাকলে 'General' দেখাবে)
         $permissions = Permission::select('id', 'name', 'display_name', 'description')
             ->get()
             ->map(function ($perm) {
@@ -23,57 +22,51 @@ class RoleController extends Controller
                 $perm->category = ucfirst($category);
                 return $perm;
             });
-
-        return Inertia::render('users/Role',[
-            'permissions' => $permissions,
-            'roles' => $roles
-        ]);
+            return Inertia::render('users/Role', [
+                'permissions' => $permissions,
+                'roles' => $roles
+            ]);
     }
 
-    function check_role(){
+    public function checkRole()
+    {
 
         $roles = Role::all();
         return response()->json($roles);
     }
 
-
     // User Role Create
-
-    public function store_role(Request $request){
+    public function storeRole(Request $request)
+    {
 
         $data = $request->validate([
             'name' => 'required|string|max:100',
             'display_name' => 'required|string',
             'description' => 'nullable|string|max:40'
         ]);
-
-        try{
+        // dd($data);
+        try {
             Role::create($data);
-            return back()->with('success' , 'Role Create Successfully');
-        } catch (\Exception $e){
+            return back()->with('success', 'Role Create Successfully');
+        } catch (\Exception $e) {
             return back()->with('error', 'Something went wrong' . $e->getMessage());
         }
-
     }
-
 
     public function destroy($id)
     {
         $role = Role::findOrFail($id);
         $role->delete();
-
         return redirect()->back()->with('success', 'Role deleted successfully!');
     }
 
-
     // Permission Page
-    function permission(){
+    public function permission()
+    {
         return Inertia::render('users/Permission');
     }
 
-
     // Assign Role to users
-
     public function users()
     {
         return User::all();
@@ -97,9 +90,8 @@ class RoleController extends Controller
         return response()->json(['message' => 'Role Assign Success']);
     }
 
-
     //
-    public function index_role()
+    public function indexRole()
     {
         return Role::all();
     }
@@ -121,5 +113,4 @@ class RoleController extends Controller
         $role->syncPermissions($request->permissions);
         return response()->json(['success' => 'Permissions updated successfully']);
     }
-
 }
