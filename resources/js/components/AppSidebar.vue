@@ -724,19 +724,19 @@ const rawNavItems: NavItem[] = [
             },
             {
                 title: 'Department List',
-                href: '#',
+                href: '/department/list',
                 icon: List,
             },
-            {
-            title: 'Add Groups',
-            href: '#',
-            icon: FolderPlus,
-            },
-            {
-            title: 'Groups List',
-            href: '#',
-            icon: FolderOpen,
-            },
+            // {
+            // title: 'Add Groups',
+            // href: '#',
+            // icon: FolderPlus,
+            // },
+            // {
+            // title: 'Groups List',
+            // href: '#',
+            // icon: FolderOpen,
+            // },
             {
             title: 'Staff Registration',
             href: '#',

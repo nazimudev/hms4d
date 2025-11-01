@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     // Department Routes
     Route::get('/create/department', [HrManageController::class, 'createDepartment'])->name('create.department');
     Route::post('/store/department', [HrManageController::class, 'storeDepartment'])->name('store.department');
+    Route::get('/department/list', [HrManageController::class, 'departmentList'])->name('department.list');
 });
 
 Route::resource('users', UsersController::class)->middleware('auth');

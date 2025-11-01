@@ -71,4 +71,13 @@ class HrManageController extends Controller
             return back()->with('error', $e->getMessage());
         }
     }
+
+    // Department List Page
+    public function departmentList()
+    {
+        $departments = Department::orderBy('id', 'desc')->paginate(10);
+        return Inertia::render('hr_managment/DepartmentList', [
+            'departments' => $departments
+        ]);
+    }
 }
